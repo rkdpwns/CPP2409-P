@@ -100,12 +100,12 @@ void processCommand(const string& command, int& user_x, int& user_y, vector<vect
         displayMap(map, user_x, user_y);
     } else if (command == "inventory") {
         user.DisplayInventory();
-    } else if (command.rfind("use ", 0) == 0) { 
-        string item = command.substr(4);
-        if (item == "potion") { 
-            user.UseItem("포션"); 
-        } else if (item == "item") { 
-            user.UseItem("아이템"); 
+    } else if (command.rfind("use ", 0) == 0) { // "use"로 시작하는 명령어 처리
+        string item = command.substr(4); // "use " 이후의 문자열 추출
+        if (item == "potion") { // 포션 사용
+            user.UseItem("포션"); // 포션은 내부적으로 "포션"으로 처리
+        } else if (item == "item") { // 아이템 사용
+            user.UseItem("아이템"); // 아이템은 내부적으로 "아이템"으로 처리
         } else {
             cout << "알 수 없는 아이템입니다: " << item << endl;
         }
