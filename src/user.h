@@ -11,6 +11,7 @@ private:
     int hp;
     string characterType; // 전사 또는 마법사
     unordered_map<string, int> inventory; // 인벤토리
+    bool armor_active = false; // 갑옷이 사용 중인지 확인
 
 public:
     User();
@@ -25,6 +26,10 @@ public:
     void AddItem(const string& item); // 아이템 추가
     void UseItem(const string& item);
     void DisplayInventory() const;
+    void ActivateArmor(); // 갑옷 활성화
+    void DeactivateArmor(); // 갑옷 비활성화
+    bool IsArmorActive() const; // 갑옷 활성화 상태 확인
+    
 };
 
 #endif

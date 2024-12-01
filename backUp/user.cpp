@@ -44,19 +44,19 @@ void User::AddItem(const string& item) {
 
 //아이템 사용
 void User::UseItem(const string& item) {
-    if (inventory[item] > 0) { // 인벤토리에 아이템이 있는지 확인
-        inventory[item]--; // 아이템 개수 감소
-        cout << item << "을(를) 사용했습니다. 남은 수량: " << inventory[item] << endl;
-
-        if (item == "포션") {
-            IncreaseHP(3); // 포션 사용 시 체력 3 회복
+    if (inventory[item] > 0) {
+        inventory[item]--;
+        if (item == "armor") {
+            ActivateArmor(); // 갑옷 활성화
+        } else if (item == "potion") {
+            IncreaseHP(3); // 포션 사용 시 체력 회복
             cout << "포션 사용으로 HP +3. 현재 HP: " << GetHP() << endl;
-            // 아이템 사용은 단순 메시지로 처리. 실제 게임 로직에서 추가 구현 가능.
         }
     } else {
         cout << item << "이(가) 인벤토리에 없습니다!" << endl;
     }
 }
+
 
 // 인벤토리 표시
 void User::DisplayInventory() const {
@@ -65,4 +65,18 @@ void User::DisplayInventory() const {
         cout << pair.first << ": " << pair.second << endl;
     }
     cout << "================" << endl;
+}
+
+void User::ActivateArmor() {
+    armor_active = true; // 갑옷 활성화
+    cout << "갑옷을 착용했습니다! 적의 공격을 방어할 수 있습니다." << endl;
+}
+
+void User::DeactivateArmor() {
+    armor_active = false; // 갑옷 비활성화
+    cout << "갑옷이 파괴되었습니다." << endl;
+}
+
+bool User::IsArmorActive() const {
+    return armor_active; // 갑옷 상태 반환
 }

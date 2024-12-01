@@ -4,8 +4,10 @@
 #include "user.h"
 #include "save_load.h"
 #include "game_logic.h"
+#include <unordered_map>
 
 using namespace std;
+std::unordered_map<std::string, int> inventory;
 
 int main() {
     string user_id;

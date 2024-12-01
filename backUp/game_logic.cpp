@@ -1,5 +1,6 @@
 #include "game_logic.h"
 #include "save_load.h"
+#include "enemy.h"
 #include <iostream>
 using namespace std;
 
@@ -71,44 +72,105 @@ bool CheckUser(const User& user) {
 }
 
 void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bool& weapon, int& armor) {
+    static Enemy currentEnemy = CreateRandomEnemy(); // 전투 시작 시 랜덤 적 생성
+
+    // 적과의 전투
+    if (map[user_y][user_x] == 2) { // 적 칸
+        cout << currentEnemy.GetName() << "과(와) 전투가 시작되었습니다!" << endl;
+        cout << "적 정보 - HP: " << currentEnemy.GetHP() 
+             << ", 공격력: " << currentEnemy.GetAttack() 
+             << ", 방어력: " << currentEnemy.GetDefense() << endl;
+
+        while (currentEnemy.IsAlive() && user.GetHP() > 0) {
+            // 플레이어 행동 선택
+            cout << "행동을 선택하세요 (attack, skill, run): ";
+            string action;
+            cin >> action;
+
+            if (action == "attack") {
+                // 기본 공격
+                int playerAttack = 10; // 플레이어 기본 공격력
+                currentEnemy.TakeDamage(playerAttack);
+                cout << currentEnemy.GetName() << "에게 " << playerAttack << " 피해를 입혔습니다!" << endl;
+                cout << currentEnemy.GetName() << "의 남은 HP: " << currentEnemy.GetHP() << endl;
+            } else if (action == "skill") {
+                // 스킬 사용
+                if (user.GetCharacterType() == "warrior") {
+                    cout << "전사의 스킬 '베기'를 사용했습니다!" << endl;
+                    currentEnemy.TakeDamage(15); // 전사 스킬 데미지
+                } else if (user.GetCharacterType() == "mage") {
+                    cout << "마법사의 스킬 '라이트닝 볼트'를 사용했습니다!" << endl;
+                    currentEnemy.TakeDamage(20); // 마법사 스킬 데미지
+                }
+                cout << currentEnemy.GetName() << "의 남은 HP: " << currentEnemy.GetHP() << endl;
+            } else if (action == "run") {
+                // 도망
+                cout << "전투에서 도망쳤습니다!" << endl;
+                return; // 전투 종료
+            } else {
+                cout << "알 수 없는 명령입니다. 다시 선택하세요." << endl;
+                continue;
+            }
+
+            // 적의 공격
+            if (currentEnemy.IsAlive()) {
+                int enemyDamage = currentEnemy.GetAttack();
+                user.DecreaseHP(enemyDamage);
+                cout << currentEnemy.GetName() << "이(가) 공격합니다! 플레이어가 " << enemyDamage << " 피해를 입었습니다." << endl;
+                cout << "현재 HP: " << user.GetHP() << endl;
+            }
+        }
+
+        // 전투 종료
+        if (!currentEnemy.IsAlive()) {
+            cout << currentEnemy.GetName() << "을(를) 물리쳤습니다!" << endl;
+            map[user_y][user_x] = 0; // 적 제거
+        } else if (user.GetHP() <= 0) {
+            cout << "플레이어가 사망했습니다. 게임 종료." << endl;
+            exit(0); // 게임 종료
+        }
+    }
+
+    // 아이템 발견
     if (map[user_y][user_x] == 1) { // 아이템 칸
         cout << "아이템을 발견했습니다!" << endl;
-        user.AddItem("아이템");
-        map[user_y][user_x] = 0; // 아이템을 빈칸으로 변경
-    } else if (map[user_y][user_x] == 2) { // 적 칸
-        cout << "적과 전투 중입니다!" << endl;
+        user.AddItem("armor"); // 갑옷 아이템 추가
+        map[user_y][user_x] = 0; // 맵에서 해당 칸을 빈칸으로 변경
+    }
 
-        if (armor > 0) { // 갑옷이 있으면 갑옷으로 방어
-            armor--;
-            cout << "갑옷으로 방어했습니다. 남은 갑옷: " << armor << endl;
-        } else if (user.GetInventoryCount("아이템") > 0) { // 무기가 있으면 방어
-            user.UseItem("아이템");
-            cout << "아이템으로 적의 공격을 방어했습니다!" << endl;
-        } else { // 갑옷과 무기가 없으면 체력 감소
-            user.DecreaseHP(5);
-            cout << "체력 감소! 남은 HP: " << user.GetHP() << endl;
-        }
-    } else if (map[user_y][user_x] == 3) { // 포션 칸
+    // 포션 발견
+    else if (map[user_y][user_x] == 3) { // 포션 칸
         cout << "포션을 발견했습니다!" << endl;
-        user.AddItem("포션");
-        map[user_y][user_x] = 0; // 포션 칸을 빈칸으로 변경
+        user.AddItem("potion"); // 포션 아이템 추가
+        map[user_y][user_x] = 0; // 맵에서 해당 칸을 빈칸으로 변경
     }
 }
 
+
+
 void processCommand(const string& command, int& user_x, int& user_y, vector<vector<int>>& map, User& user, bool& weapon, int& armor) {
-    if (command == "map") {
-        displayMap(map, user_x, user_y);
-    } else if (command == "inventory") {
-        user.DisplayInventory();
-    } else if (command.rfind("use ", 0) == 0) { 
-        string item = command.substr(4);
-        if (item == "potion") { 
-            user.UseItem("포션"); 
-        } else if (item == "item") { 
-            user.UseItem("아이템"); 
-        } else {
-            cout << "알 수 없는 아이템입니다: " << item << endl;
+    if (command == "inventory") {
+        user.DisplayInventory(); // 인벤토리 출력
+
+        cout << "아이템을 사용하시겠습니까? (yes/no): ";
+        string choice;
+        cin >> choice;
+
+        if (choice == "yes") {
+            cout << "사용할 아이템 이름을 입력하세요 (armor/potion): ";
+            string item;
+            cin >> item;
+
+            if (item == "armor") {
+                user.UseItem("armor"); // 갑옷 사용
+            } else if (item == "potion") {
+                user.UseItem("potion"); // 포션 사용
+            } else {
+                cout << "알 수 없는 아이템입니다!" << endl;
+            }
         }
+    } else if (command == "map") {
+        displayMap(map, user_x, user_y);
     } else if (command == "save") {
         saveGame("user_id", map, user_x, user_y, user, weapon, armor);
         cout << "게임 상태가 저장되었습니다." << endl;
