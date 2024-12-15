@@ -73,15 +73,6 @@ void User::ActivateArmor() {
     cout << "갑옷을 착용했습니다! 적의 공격을 방어할 수 있습니다." << endl;
 }
 
-void User::DeactivateArmor() {
-    armor_active = false; // 갑옷 비활성화
-    cout << "갑옷이 파괴되었습니다." << endl;
-}
-
-bool User::IsArmorActive() const {
-    return armor_active; // 갑옷 상태 반환
-}
-
 const unordered_map<string, int>& User::GetInventory() const {
     return inventory; // 인벤토리 반환
 }

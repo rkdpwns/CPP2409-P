@@ -132,12 +132,14 @@ cout << "현재 위치: (" << user_x << ", " << user_y << "), 칸 상태: " << m
             // 적의 공격
             if (currentEnemy.IsAlive()) {
                 if (user.IsArmorActive()) {
-                    cout << currentEnemy.GetName() << "의 공격이 갑옷에 막혔습니다!" << endl;
-                    user.DeactivateArmor(); // 아머 비활성화
+                    cout << "갑옷으로 " << currentEnemy.GetName() << "의 공격을 방어했습니다!" << endl;
+                    user.DeactivateArmor(); // 갑옷 비활성화
+                    cout << "갑옷이 해제되었습니다." << endl;
                 } else {
-                    int enemyDamage = currentEnemy.GetAttack();
-                    user.DecreaseHP(enemyDamage);
-                    cout << currentEnemy.GetName() << "이(가) 공격합니다! 플레이어가 " << enemyDamage << " 피해를 입었습니다." << endl;
+                    int enemyDamage = currentEnemy.GetAttack(); // 적 공격력
+                    user.DecreaseHP(enemyDamage); // 플레이어 HP 감소
+                    cout << currentEnemy.GetName() << "이(가) 공격합니다! 플레이어가 " 
+                        << enemyDamage << " 피해를 입었습니다." << endl;
                     cout << "현재 HP: " << user.GetHP() << endl;
                 }
             }
