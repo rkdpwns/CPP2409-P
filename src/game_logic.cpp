@@ -74,6 +74,23 @@ bool CheckUser(const User& user) {
 void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bool& weapon, int& armor) {
     static Enemy currentEnemy = CreateRandomEnemy(); // 전투 시작 시 랜덤 적 생성
 
+cout << "현재 위치: (" << user_x << ", " << user_y << "), 칸 상태: " << map[user_y][user_x] << endl;
+
+    if (map[user_y][user_x] == 1) { // 아이템 칸
+        cout << "아이템을 발견했습니다!" << endl;
+        user.AddItem("armor"); // 갑옷 아이템 추가
+        map[user_y][user_x] = 0; // 맵에서 해당 칸을 빈칸으로 변경
+        cout << "아이템 획득 완료. 맵 업데이트." << endl;
+    }
+
+    // 포션 발견
+    else if (map[user_y][user_x] == 3) { // 포션 칸
+        cout << "포션을 발견했습니다!" << endl;
+        user.AddItem("potion"); // 포션 아이템 추가
+        map[user_y][user_x] = 0; // 맵에서 해당 칸을 빈칸으로 변경
+        cout << "포션 획득 완료. 맵 업데이트." << endl;
+    }
+
     // 적과의 전투
     if (map[user_y][user_x] == 2) { // 적 칸
         cout << currentEnemy.GetName() << "과(와) 전투가 시작되었습니다!" << endl;
@@ -89,7 +106,7 @@ void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bo
 
             if (action == "attack") {
                 // 기본 공격
-                int playerAttack = 10; // 플레이어 기본 공격력
+                int playerAttack = 20; // 플레이어 기본 공격력
                 currentEnemy.TakeDamage(playerAttack);
                 cout << currentEnemy.GetName() << "에게 " << playerAttack << " 피해를 입혔습니다!" << endl;
                 cout << currentEnemy.GetName() << "의 남은 HP: " << currentEnemy.GetHP() << endl;
@@ -97,10 +114,10 @@ void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bo
                 // 스킬 사용
                 if (user.GetCharacterType() == "warrior") {
                     cout << "전사의 스킬 '베기'를 사용했습니다!" << endl;
-                    currentEnemy.TakeDamage(15); // 전사 스킬 데미지
+                    currentEnemy.TakeDamage(30, true); // 전사 스킬 데미지
                 } else if (user.GetCharacterType() == "mage") {
                     cout << "마법사의 스킬 '라이트닝 볼트'를 사용했습니다!" << endl;
-                    currentEnemy.TakeDamage(20); // 마법사 스킬 데미지
+                    currentEnemy.TakeDamage(20, true); // 마법사 스킬 데미지
                 }
                 cout << currentEnemy.GetName() << "의 남은 HP: " << currentEnemy.GetHP() << endl;
             } else if (action == "run") {
@@ -114,12 +131,16 @@ void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bo
 
             // 적의 공격
             if (currentEnemy.IsAlive()) {
-                int enemyDamage = currentEnemy.GetAttack();
-                user.DecreaseHP(enemyDamage);
-                cout << currentEnemy.GetName() << "이(가) 공격합니다! 플레이어가 " << enemyDamage << " 피해를 입었습니다." << endl;
-                cout << "현재 HP: " << user.GetHP() << endl;
+                if (user.IsArmorActive()) {
+                    cout << currentEnemy.GetName() << "의 공격이 갑옷에 막혔습니다!" << endl;
+                    user.DeactivateArmor(); // 아머 비활성화
+                } else {
+                    int enemyDamage = currentEnemy.GetAttack();
+                    user.DecreaseHP(enemyDamage);
+                    cout << currentEnemy.GetName() << "이(가) 공격합니다! 플레이어가 " << enemyDamage << " 피해를 입었습니다." << endl;
+                    cout << "현재 HP: " << user.GetHP() << endl;
+                }
             }
-        }
 
         // 전투 종료
         if (!currentEnemy.IsAlive()) {
@@ -145,7 +166,7 @@ void checkState(vector<vector<int>>& map, int user_x, int user_y, User& user, bo
         map[user_y][user_x] = 0; // 맵에서 해당 칸을 빈칸으로 변경
     }
 }
-
+}
 
 
 void processCommand(const string& command, int& user_x, int& user_y, vector<vector<int>>& map, User& user, bool& weapon, int& armor) {
@@ -178,3 +199,4 @@ void processCommand(const string& command, int& user_x, int& user_y, vector<vect
         cout << "알 수 없는 명령입니다!" << endl;
     }
 }
+

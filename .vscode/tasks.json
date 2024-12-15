@@ -1,19 +1,23 @@
 {
+    "version": "2.0.0",
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++.exe 활성 파일 빌드",
+            "label": "Build Entire Project with SFML",
             "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                //"${file}",
-                "${fileDirname}\\**.cpp",
+                "-IC:/CPP2409-P/src/SFML-2.6.2/include", // SFML include 경로
+                "-LC:/CPP2409-P/src/SFML-2.6.2/lib",      // SFML lib 경로
+                "${fileDirname}\\*.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\main.exe",
+                "-lsfml-audio",
+                "-lsfml-system"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -22,8 +26,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "디버거에서 생성된 작업입니다."
+            "detail": "SFML 라이브러리를 포함한 전체 프로젝트 빌드"
         }
-    ],
-    "version": "2.0.0"
+    ]
 }

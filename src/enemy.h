@@ -17,7 +17,7 @@ public:
     int GetHP() const;
     int GetAttack() const;
     int GetDefense() const;
-    void TakeDamage(int damage);
+    void TakeDamage(int damage, bool ignoreDefense = false);
     bool IsAlive() const;
 };
 Enemy CreateRandomEnemy();

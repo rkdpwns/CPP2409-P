@@ -14,6 +14,8 @@ private:
     bool armor_active = false; // 갑옷이 사용 중인지 확인
 
 public:
+    const unordered_map<string, int>& GetInventory() const; // 인벤토리 반환
+    void SetInventoryItem(const string& item, int count);   // 아이템 설정
     User();
     void Initialize(const string& type); // 캐릭터 초기화
     void DecreaseHP(int dec_hp);

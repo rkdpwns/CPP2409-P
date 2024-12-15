@@ -32,15 +32,19 @@ int Enemy::GetDefense() const {
     return defense;
 }
 
-void Enemy::TakeDamage(int damage) {
-    int effectiveDamage = damage - defense; // 방어력 고려
-    if (effectiveDamage > 0) {
-        hp -= effectiveDamage;
-        cout << name << "이(가) " << effectiveDamage << " 피해를 입었습니다! 남은 HP: " << hp << endl;
+void Enemy::TakeDamage(int damage, bool ignoreDefense) {
+    int effectiveDamage;
+
+    if (ignoreDefense) {
+        effectiveDamage = damage; // 방어력 무시
     } else {
-        cout << name << "이(가) 방어했습니다!" << endl;
+        effectiveDamage = max(1, damage - defense); // 방어력 고려
     }
+
+    hp -= effectiveDamage;
+    cout << name << "이(가) " << effectiveDamage << " 피해를 입었습니다! 남은 HP: " << hp << endl;
 }
+
 
 bool Enemy::IsAlive() const {
     return hp > 0;

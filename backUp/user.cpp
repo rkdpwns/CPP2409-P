@@ -49,8 +49,8 @@ void User::UseItem(const string& item) {
         if (item == "armor") {
             ActivateArmor(); // 갑옷 활성화
         } else if (item == "potion") {
-            IncreaseHP(3); // 포션 사용 시 체력 회복
-            cout << "포션 사용으로 HP +3. 현재 HP: " << GetHP() << endl;
+            IncreaseHP(20); // 포션 사용 시 체력 회복
+            cout << "포션 사용으로 HP +20. 현재 HP: " << GetHP() << endl;
         }
     } else {
         cout << item << "이(가) 인벤토리에 없습니다!" << endl;
@@ -79,4 +79,12 @@ void User::DeactivateArmor() {
 
 bool User::IsArmorActive() const {
     return armor_active; // 갑옷 상태 반환
+}
+
+const unordered_map<string, int>& User::GetInventory() const {
+    return inventory; // 인벤토리 반환
+}
+
+void User::SetInventoryItem(const string& item, int count) {
+    inventory[item] = count; // 아이템 설정
 }
